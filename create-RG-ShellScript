@@ -1,7 +1,78 @@
 azure cli commands : 
 RG=rgNsg 
+eg., RG=nsgDemo
+
+#--------------------------Resource Group----------------------------------
 # Create a Resource Group 
 az group create -l centralus -n ${RG}
 
 # delete a resource group
-az group delete --name ${RG} --yes --no-wait
+az group delete --name  ${RG} -l centralus --yes --no-wait
+az group create --location westus --resource-group MyResourceGroup
+
+# List all resource groups located in the West US region.
+az group list --query "[?location=='centralus']"
+
+#--------------------------Virtual Network (VNet) ----------------------------------
+# create a subnet in the given resource group 
+az network vnet create -g ${RG} -n ${RG}-CentralUS-Vnet-1 --address-prefix 10.1.0.0/16  --location centralus
+
+#------------ Virtual Security Group  (NSG) --Virtual FireWall--------------------------------------
+# Create a Network Security Group and setup inbound and outbound rules 
+
+az network nsg create -g ${RG} -n ${RG}_CentralUS_NSG1 --location centralus
+
+#----------Setting up of Inbound and outbond rules in the NSG----------------------------------------------- 
+# az network nsg rule create -g ${RG} --nsg-name ${RG}_centralUS_NSG1 -n ${RG}_NSG1_RULE1 --priority 100 \ 
+--source-address-prefixes '*' --source-port-ranges '*' --destination-address-prefixes '*' --destination-port-ranges '*' \ 
+--access Allow  --protocol Tcp --description "Allowing All Traffic For Now"
+
+#------------------Virutal Subnet in the Virtual Network (SubNet in VNet-------------------------
+# Create SubNet1
+az network vnet subnet create -g ${RG} --vnet-name ${RG}-CentralUS-Vnet-1 --name  ${RG}-CentralUS-Subnet-1 --address-prefix 10.1.1.0/24
+# Create SubNet2
+az network vnet subnet create -g ${RG} --vnet-name ${RG}-CentralUS-Vnet-1 --name  ${RG}-CentralUS-Subnet-2 --address-prefix 10.1.2.0/24
+# Create SubNet3 
+az network vnet subnet create -g ${RG} --vnet-name ${RG}-CentralUS-Vnet-1 --name  ${RG}-CentralUS-Subnet-3 --address-prefix 10.1.3.0/24
+
+
+#--------------- Virtual Machine (VM)-------------------------------------------------
+# Create VM  1 in VNet1 Subnet 1  With NSG Rule 
+az vm create \
+  --resource-group ${RG} \
+  --name ${RG}-CentralUS-VM1 \
+  --image Ubuntu2204 \
+  --vnet-name ${RG}-CentralUS-Vnet-1 \
+  --subnet ${RG}-CentralUS-Subnet-1 \
+  --admin-username testuser \
+  --admin-password "India@123456" \
+  --size Standard_B1ls \
+  --nsg ${RG}-CentralUS-NSG1 \
+  --location centralus
+
+# Create VM  2 in VNet1 Subnet 2 With default NSG  
+az vm create \
+  --resource-group ${RG} \
+  --name ${RG}-CentralUS-VM2 \
+  --image Ubuntu2204 \
+  --vnet-name ${RG}-CentralUS-Vnet-1 \
+  --subnet ${RG}-CentralUS-Subnet-2 \
+  --admin-username testuser \
+  --admin-password "India@123456" \
+  --size Standard_B1ls \
+  --location centralus
+
+# Create VM  3 in VNet1 Subnet 3  Without NSG Rule
+az vm create \
+  --resource-group ${RG} \
+  --name ${RG}-CentralUS-VM3 \
+  --image Ubuntu2204 \
+  --vnet-name ${RG}-CentralUS-Vnet-1 \
+  --subnet ${RG}-CentralUS-Subnet-3 \
+  --admin-username testuser \
+  --admin-password "India@123456" \
+  --size Standard_B1ls \
+  --nsg " " \
+  --location centralus
+
+
