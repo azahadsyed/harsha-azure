@@ -1,0 +1,7 @@
+azure cli commands : 
+RG=rgNsg 
+# Create a Resource Group 
+az group create -l centralus -n ${RG}
+
+# delete a resource group
+az group delete --name ${RG} --yes --no-wait
