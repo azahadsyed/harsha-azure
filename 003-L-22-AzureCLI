@@ -1,0 +1,24 @@
+$connectionString='DefaultEndpointsProtocol=https;AccountName=xxx;AccountKey=xxx'  # Sample
+$ctx = New-AzStorageContext  -ConnectionString $connectionString
+$container_name='foo-cnt'
+$blobs = Get-AzStorageBlob -Container $container_name -Context $ctx
+foreach($blob in $blobs)
+{
+ Get-AzStorageBlobContent -Container $container_name -Blob $blob.Name -Destination "X:\test\" -Context $ctx
+}
+
+
+# download Download Azure Storage Explorer 
+# Windows Powershell ISE (integrated Scripted Environment)
+# Azure Data Studio
+# Azure One Lake 
+
+$connectionString= 'DefaultEndpointsProtocol=https;AccountName=storagexxx;AccountKey=fooKey;EndpointSuffix=core.windows.net'
+$ctx = New-AzStorageContext  -ConnectionString $connctionString
+$container_name ='xxxcnt'
+$blobs = Get-AzStorageBlob -Container $container_name -Context $ctx
+foreach($blob in $blobs)
+{
+ Get-AzStorageBlobContent -Container $container_name -Blob $blob.Name -Destination "C:\test\" -Context $ctx
+}
+dir c:\test
