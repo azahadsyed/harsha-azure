@@ -1,0 +1,281 @@
+commands learned and executed 
+2024-11-04 (Monday)
+powershell in windows 
+# to install AZ cli tool 
+
+ > Install-Module Az -AllowClobber -Verbose -Force
+# Import the Module After installation, you can import the module if it doesn't load automatically:
+Import-Module Az
+
+Integrated Scripted Environment in Windows
+ # Windows Search (ISE)
+ # open Windows Powershell ISE with admin
+
+# Authenticate to Azure -> Before you can use any Az commands, you need to authenticate to your Azure account:
+> Connect-AzAccount
+
+# Basic Commands
+You can start using various Az commands. Here are a few common ones:
+
+## List Subscriptions:
+> Get-AzSubscription
+
+## Select a Subscription: 
+> Select-AzSubscription -SubscriptionId "your-subscription-id"
+
+## List Resource Groups:
+> Get-AzResourceGroup
+
+## Create a Resource Group:
+> New-AzResourceGroup -Name "myResourceGroup" -Location "East US"
+
+
+## Deploy a Resource (e.g., a Virtual Machine):
+> New-AzVM -ResourceGroupName "myResourceGroup" -Name "myVM" -Location "East US" -Image "Win2019Datacenter" -Credential (Get-Credential)
+
+
+## Using Help and Documentation -> For more detailed information about any command, you can use the Get-Help cmdlet:
+
+Get-Help Get-AzResourceGroup -Full
+
+## Scripting and Automation
+You can write scripts using Az commands to automate your Azure tasks. Save your commands in a .ps1 file and run it in PowerShell.
+
+Example Script
+Here's a simple example of a script to create a resource group and a VM:
+
+# Connect to Azure
+Connect-AzAccount
+
+# Create a resource group
+$resourceGroup = New-AzResourceGroup -Name "MyResourceGroup" -Location "East US"
+
+# Create a virtual machine
+$vm = New-AzVM -ResourceGroupName "MyResourceGroup" -Name "MyVM" -Location "East US" -Image "Win2019Datacenter" -Credential (Get-Credential)
+
+## Log Out -> When you're done, you can log out:
+> Disconnect-AzAccount
+
+
+## To run a PowerShell script, follow these steps:
+
+1. Create a PowerShell Script
+Open a text editor (like Notepad) or PowerShell ISE.
+Write your PowerShell commands in the editor.
+Save the file with a .ps1 extension. For example, myscript.ps1.
+
+2. Set Execution Policy
+Before you can run scripts, you may need to set the execution policy. This controls the running of scripts on your system. You can check the current policy with:
+ > Get-ExecutionPolicy
+
+To allow scripts to run, you might want to set it to RemoteSigned or Unrestricted. You can do this with the following command (run PowerShell as an administrator):
+
+> Set-ExecutionPolicy RemoteSigned
+
+3. Navigate to the Script's Directory
+Open PowerShell and navigate to the directory where your script is saved using the cd command. For example:
+
+> cd "C:\Path\To\Your\Script"
+
+4. Run the Script
+You can run the script by typing .\ followed by the script name:
+ > .\myscript.ps1
+
+5. Common Issues
+Execution Policy Error: If you encounter an execution policy error, you may need to adjust the policy as mentioned above.
+Path Issues: Ensure you're in the correct directory or provide the full path to the script.
+
+6. Running Scripts from Any Location
+If you want to run scripts from any location without navigating to the script's directory, you can use the full path:
+
+> & "C:\Path\To\Your\Script\myscript.ps1"
+
+7. Using Parameters
+If your script accepts parameters, you can pass them like this:
+ > .\myscript.ps1 -ParameterName "Value"
+Example Script
+Here’s a simple example of a script that writes "Hello, World!" to the console:
+ >  myscript.ps1
+Write-Host "Hello, World!"
+After saving it, you would run it as described above.
+
+
+## --------Handling parameters in PowerShell scripts is straightforward. Here’s how to define and use parameters effectively:
+
+1. Defining Parameters in a Script
+You define parameters at the beginning of your script using the param block. Here’s an example:
+# myscript.ps1
+param (
+    [string]$Name,
+    [int]$Age
+)
+
+Write-Host "Hello, $Name! You are $Age years old."
+
+2. Running the Script with Parameters
+You can pass parameters when you run the script. Here’s how:
+
+> .\myscript.ps1 -Name "Alice" -Age 30
+This will output:
+   Hello, Alice! You are 30 years old.
+
+3. Parameter Types
+You can specify the type of the parameters for better validation. Common types include:
+
+[string]
+[int]
+[bool]
+[datetime]
+[array]
+Example with multiple types:
+
+powershell
+Copy code
+param (
+    [string]$FileName,
+    [int]$Count,
+    [bool]$Verbose
+)
+
+4. Default Parameter Values
+You can set default values for parameters. If a parameter isn’t provided when the script is run, the default value will be used:
+
+powershell
+Copy code
+param (
+    [string]$Name = "Guest",
+    [int]$Age = 25
+)
+
+
+5. Mandatory Parameters
+You can make a parameter mandatory by using the Mandatory attribute. PowerShell will prompt the user for input if the parameter is not provided:
+
+param (
+    [Parameter(Mandatory = $true)]
+    [string]$Name
+)
+
+6. Using Cmdlets with Parameters
+You can also use parameters with cmdlets directly in your script. For example:
+
+param (
+    [string]$ResourceGroupName,
+    [string]$Location = "East US"
+)
+
+> New-AzResourceGroup -Name $ResourceGroupName -Location $Location
+
+7. Accessing Named Parameters in the Script
+Inside your script, you can directly use the parameter names defined in the param block. For example:
+
+param (
+    [string]$FilePath
+)
+
+if (Test-Path $FilePath) {
+    Write-Host "File exists: $FilePath"
+} else {
+    Write-Host "File not found: $FilePath"
+}
+
+8. Example with Multiple Parameters
+Here's a complete example script that accepts multiple parameters and checks for a file's existence:
+
+# checkfile.ps1
+param (
+    [string]$FilePath,
+    [string]$UserName = "DefaultUser"
+)
+
+if (Test-Path $FilePath) {
+    Write-Host "File exists: $FilePath"
+} else {
+    Write-Host "File not found: $FilePath"
+}
+
+Write-Host "Executed by: $UserName"
+You can run this script with:
+
+> .\checkfile.ps1 -FilePath "C:\example.txt" -UserName "Alice"
+This approach allows you to create flexible and reusable scripts.
+
+
+Practice : 
+
+#:1---------------Connect to Azure Account ---------------------------------------------------
+PS C:\WINDOWS\system32> Connect-AzAccount
+Please select the account you want to login with.
+
+Retrieving subscriptions for the selection...
+
+[Announcements]
+With the new Azure PowerShell login experience, you can select the subscription you want to use more easily. Learn more about it and its configuration at https://go.microsoft.com/fwlink/?linkid=2271909.
+
+If you encounter any problem, please open an issue at: https://aka.ms/azpsissue
+
+Subscription name Tenant
+----------------- ------
+Free Trial        agriai.shop
+
+#2:-----------------Get the available Resource Groups --------------------------------------------------
+
+PS C:\WINDOWS\system32> Get-AzResourceGroup
+
+
+ResourceGroupName : rg-shell
+Location          : westus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/rg-shell
+
+ResourceGroupName : fabric-rg
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/fabric-rg
+
+ResourceGroupName : rg-lesson07
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/rg-lesson07
+
+ResourceGroupName : rg-lesson11
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/rg-lesson11
+
+ResourceGroupName : rg-sql
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/rg-sql
+
+ResourceGroupName : NetworkWatcherRG
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/NetworkWatcherRG
+
+ResourceGroupName : rgDemo
+Location          : centralus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/rgDemo
+
+#-------------Create a Resource group ----------------------------------------------------------------------
+
+PS C:\WINDOWS\system32> New-AzResourceGroup -Name "psDemo" -Location "East US"
+
+
+ResourceGroupName : psDemo
+Location          : eastus
+ProvisioningState : Succeeded
+Tags              :
+ResourceId        : /subscriptions/a72cc6c3-f86b-45dc-9ce0-769f3d2cd598/resourceGroups/psDemo
+
+#-----------------------------------------------------------------------------------------------------------
+
+
